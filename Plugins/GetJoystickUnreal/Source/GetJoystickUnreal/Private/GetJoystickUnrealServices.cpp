@@ -17,12 +17,16 @@ GetJoystickUnrealServices::~GetJoystickUnrealServices()
 void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentIds)
 {
     FString Url = GetJoystickUnrealServices::GetConfigContentAPIUrl(ContentIds);
+    UE_LOG(LogTemp, Warning, TEXT("HTTP POST URL: %s"), *Url);
 
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb("POST");
     HttpRequest->SetURL(Url);
-    HttpRequest->SetHeader("Content-Type", "application/x-www-form-urlencoded");
-    //HttpRequest->SetContentAsString(Content);
+    HttpRequest->SetHeader("Content-Type", "application/json");
+    HttpRequest->AppendToHeader("x-api-key", "yIki0RmVmMUGwfkVABBYkVWbPAdRjEA0");
+
+    FString RequestBody = ("{\"key\":\"value\"}");
+    HttpRequest->SetContentAsString(RequestBody);
 
     HttpRequest->OnProcessRequestComplete().BindStatic([](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
         if (bWasSuccessful)
