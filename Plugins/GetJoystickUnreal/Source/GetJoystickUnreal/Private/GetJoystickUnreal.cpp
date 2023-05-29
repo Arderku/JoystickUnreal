@@ -2,6 +2,7 @@
 
 #include "GetJoystickUnreal.h"
 #include "GetJoystickUnrealServices.h"
+#include "GetJoystickUnrealSettings.h"
 
 #define LOCTEXT_NAMESPACE "FGetJoystickUnrealModule"
 
@@ -31,7 +32,9 @@ void FGetJoystickUnrealModule::FetchCatalogContent()
 
 void FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(FString apiKey)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TEST SetRuntimeEnvironmentAPIKey"));
+	UGetJoystickUnrealSettings::SetCurrentEnvironmentAPIKey(apiKey);
+
+	UE_LOG(LogTemp, Warning, TEXT("TEST SetRuntimeEnvironmentAPIKey: %s"), *apiKey);
 }
 
 

@@ -2,6 +2,7 @@
 
 
 #include "GetJoystickUnrealServices.h"
+#include "GetJoystickUnrealSettings.h"
 #include "Misc/SecureHash.h"
 
 #include "Http.h"
@@ -17,13 +18,16 @@ GetJoystickUnrealServices::~GetJoystickUnrealServices()
 void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentIds)
 {
     FString Url = GetJoystickUnrealServices::GetConfigContentAPIUrl(ContentIds);
+    FString currentAPIKey = UGetJoystickUnrealSettings::GetCurrentEnvironmentAPIKey();
+
     UE_LOG(LogTemp, Warning, TEXT("HTTP POST URL: %s"), *Url);
+    UE_LOG(LogTemp, Warning, TEXT("HTTP POST API KEY: %s"), *currentAPIKey);
 
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb("POST");
     HttpRequest->SetURL(Url);
     HttpRequest->SetHeader("Content-Type", "application/json");
-    HttpRequest->AppendToHeader("x-api-key", "yIki0RmVmMUGwfkVABBYkVWbPAdRjEA0");
+    HttpRequest->AppendToHeader("x-api-key", currentAPIKey);
 
     FString RequestBody = ("{\"key\":\"value\"}");
     HttpRequest->SetContentAsString(RequestBody);
