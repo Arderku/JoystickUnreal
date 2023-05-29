@@ -11,7 +11,15 @@ UGetJoystickUnrealBPLibrary::UGetJoystickUnrealBPLibrary(const FObjectInitialize
 
 void UGetJoystickUnrealBPLibrary::GetJoystickUnrealRequestContent(TArray<FString> ContentIDs)
 {
-	//FGetJoystickUnrealModule::FetchConfigContent(ContentIDs);
+	FGetJoystickUnrealModule::FetchConfigContent(ContentIDs);
 }
 
+void UGetJoystickUnrealBPLibrary::GetJoystickUnrealRequestCatalogContent()
+{
+	FGetJoystickUnrealModule::FetchCatalogContent();
+}
 
+void UGetJoystickUnrealBPLibrary::GetJoystickUnrealSetRuntimeEnvironmentAPIKey(FString apiKey)
+{
+	FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(apiKey);
+}

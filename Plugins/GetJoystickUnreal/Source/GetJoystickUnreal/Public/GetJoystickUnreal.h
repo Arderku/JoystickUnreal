@@ -13,4 +13,6 @@ public:
 	virtual void ShutdownModule() override;
 
 	static void FetchConfigContent(const TArray<FString> ContentIDs);
+	static void FetchCatalogContent();
+	static void SetRuntimeEnvironmentAPIKey(FString apiKey);
 };
