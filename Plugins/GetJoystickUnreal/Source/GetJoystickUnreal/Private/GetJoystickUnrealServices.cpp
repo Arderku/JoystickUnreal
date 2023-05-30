@@ -6,6 +6,7 @@
 #include "Misc/SecureHash.h"
 
 #include "Http.h"
+#include "HttpModule.h"
 
 GetJoystickUnrealServices::GetJoystickUnrealServices()
 {
@@ -20,8 +21,7 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
     FString Url = GetJoystickUnrealServices::GetConfigContentAPIUrl(ContentIds);
     FString currentAPIKey = UGetJoystickUnrealSettings::GetCurrentEnvironmentAPIKey();
 
-    UE_LOG(LogTemp, Warning, TEXT("HTTP POST URL: %s"), *Url);
-    UE_LOG(LogTemp, Warning, TEXT("HTTP POST API KEY: %s"), *currentAPIKey);
+    UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP POST URL: %s"), *Url);
 
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb("POST");
@@ -37,17 +37,62 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
         {
             // Request succeeded, handle the response here
             FString ResponseContent = Response->GetContentAsString();
-            UE_LOG(LogTemp, Warning, TEXT("HTTP POST response: %s"), *ResponseContent);
+            UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP POST response: %s"), *ResponseContent);
         }
         else
         {
             // Request failed
-            UE_LOG(LogTemp, Error, TEXT("HTTP POST request failed!"));
+            UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP POST request failed!"));
         }
         });
 
     HttpRequest->ProcessRequest();
 }
+
+void GetJoystickUnrealServices::PerformHttpGetCatalog()
+{
+    FString Url = GetJoystickUnrealServices::GetCatalogConfigAPIUrl();
+    FString currentAPIKey = UGetJoystickUnrealSettings::GetCurrentEnvironmentAPIKey();
+
+    UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP GET URL: %s"), *Url);
+
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetVerb("GET");
+    HttpRequest->SetURL(Url);
+    HttpRequest->SetHeader("Content-Type", "application/json");
+    HttpRequest->AppendToHeader("x-api-key", currentAPIKey);
+
+    FString RequestBody = ("{\"key\":\"value\"}");
+    HttpRequest->SetContentAsString(RequestBody);
+
+    HttpRequest->OnProcessRequestComplete().BindStatic(&OnHttpGetResponseReceived);
+
+    if (!HttpRequest->ProcessRequest())
+    {
+        UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
+    }
+}
+
+ void GetJoystickUnrealServices::OnHttpGetResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful && Response.IsValid())
+    {
+        int32 ResponseCode = Response->GetResponseCode();
+        FString ResponseContent = Response->GetContentAsString();
+
+        // Process the response content
+        // ...
+        UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP GET response: %s"), *ResponseContent);
+    }
+    else
+    {
+        // Handle request failure
+        UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
+    }
+}
+  
+
+
 
 FString GetJoystickUnrealServices::GetConfigContentAPIUrl(const TArray<FString>& ContentIds)
 {
@@ -71,4 +116,12 @@ FString GetJoystickUnrealServices::GetConfigContentAPIUrl(const TArray<FString>&
     FString APIUrl = FString::Printf(TEXT("https://api.getjoystick.com/api/v1/combine/?c=[%s]&dynamic=true%s"), *CombinedIds, *AppendParam);
 
     return APIUrl;
+}
+
+FString GetJoystickUnrealServices::GetCatalogConfigAPIUrl()
+{
+    FString Url = "https://api.getjoystick.com/api/v1/env/catalog";
+    
+
+    return Url;
 }

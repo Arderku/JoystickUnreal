@@ -9,7 +9,7 @@
 void FGetJoystickUnrealModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	UE_LOG(LogTemp, Warning, TEXT("TEST GetJoystickUnreal Startup Module!"));
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: GetJoystickUnreal Startup Module!"));
 }
 
 void FGetJoystickUnrealModule::ShutdownModule()
@@ -21,20 +21,21 @@ void FGetJoystickUnrealModule::ShutdownModule()
 
 void FGetJoystickUnrealModule::FetchConfigContent(const TArray<FString> ContentIDs)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TEST FetchConfigContent"));
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: FetchConfigContent"));
 	GetJoystickUnrealServices::PerformHttpPost(ContentIDs);
 }
 
 void FGetJoystickUnrealModule::FetchCatalogContent()
 {
-	UE_LOG(LogTemp, Warning, TEXT("TEST FetchCatalogContent"));
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: FetchCatalogContent"));
+	GetJoystickUnrealServices::PerformHttpGetCatalog();
 }
 
 void FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(FString apiKey)
 {
 	UGetJoystickUnrealSettings::SetCurrentEnvironmentAPIKey(apiKey);
 
-	UE_LOG(LogTemp, Warning, TEXT("TEST SetRuntimeEnvironmentAPIKey: %s"), *apiKey);
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: SetRuntimeEnvironmentAPIKey: %s"), *apiKey);
 }
 
 
