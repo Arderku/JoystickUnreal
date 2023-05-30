@@ -7,6 +7,7 @@
 
 #include "Http.h"
 #include "HttpModule.h"
+#include "JsonUtilities.h"
 
 GetJoystickUnrealServices::GetJoystickUnrealServices()
 {
@@ -29,7 +30,12 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
     HttpRequest->SetHeader("Content-Type", "application/json");
     HttpRequest->AppendToHeader("x-api-key", currentAPIKey);
 
-    FString RequestBody = ("{\"key\":\"value\"}");
+    TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+    FString RequestBody;
+    TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&RequestBody);
+    FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter);
+    JsonWriter->Close();
+
     HttpRequest->SetContentAsString(RequestBody);
 
     HttpRequest->OnProcessRequestComplete().BindStatic([](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
