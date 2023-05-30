@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "HttpModule.h"
-
+#include "Http.h"
+#include "JsonUtilities.h"
 
 /**
  * 
  */
+
 class GetJoystickUnrealServices
 {
 public:

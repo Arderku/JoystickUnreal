@@ -5,9 +5,6 @@
 #include "GetJoystickUnrealSettings.h"
 #include "Misc/SecureHash.h"
 
-#include "Http.h"
-#include "HttpModule.h"
-#include "JsonUtilities.h"
 
 GetJoystickUnrealServices::GetJoystickUnrealServices()
 {
@@ -39,7 +36,7 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
     HttpRequest->SetContentAsString(RequestBody);
 
     HttpRequest->OnProcessRequestComplete().BindStatic([](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
-        if (bWasSuccessful)
+        if (bWasSuccessful && Response.IsValid())
         {
             // Request succeeded, handle the response here
             FString ResponseContent = Response->GetContentAsString();
@@ -92,10 +89,7 @@ void GetJoystickUnrealServices::OnHttpGetResponseReceived(FHttpRequestPtr Reques
         // Handle request failure
         UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
     }
-}
-
-  
-
+} 
 
 FString GetJoystickUnrealServices::GetConfigContentAPIUrl(const TArray<FString>& ContentIds)
 {
@@ -109,7 +103,6 @@ FString GetJoystickUnrealServices::GetConfigContentAPIUrl(const TArray<FString>&
             CombinedIds += TEXT(",");
         }
     }
-
 
     bool bShouldSerialize = true;
 
@@ -125,6 +118,5 @@ FString GetJoystickUnrealServices::GetCatalogConfigAPIUrl()
 {
     FString Url = "https://api.getjoystick.com/api/v1/env/catalog";
     
-
     return Url;
 }
