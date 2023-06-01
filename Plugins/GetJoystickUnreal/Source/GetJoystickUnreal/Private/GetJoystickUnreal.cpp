@@ -16,7 +16,6 @@ void FGetJoystickUnrealModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
-	
 }
 
 void FGetJoystickUnrealModule::FetchConfigContent(const TArray<FString> ContentIDs)
@@ -28,6 +27,7 @@ void FGetJoystickUnrealModule::FetchConfigContent(const TArray<FString> ContentI
 void FGetJoystickUnrealModule::FetchCatalogContent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: FetchCatalogContent"));
+	GetJoystickUnrealServices::HttpRequestCompleteDelegate.BindStatic(&OnHttpRequestComplete);
 	GetJoystickUnrealServices::PerformHttpGetCatalog();
 }
 
@@ -36,6 +36,11 @@ void FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(FString apiKey)
 	UGetJoystickUnrealSettings::SetCurrentEnvironmentAPIKey(apiKey);
 
 	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: SetRuntimeEnvironmentAPIKey: %s"), *apiKey);
+}
+
+void FGetJoystickUnrealModule::OnHttpRequestComplete(bool Succeed, FString ResponseJsonData)
+{
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: OnHttpRequestComplete: %s"), *ResponseJsonData);
 }
 
 

@@ -15,4 +15,5 @@ public:
 	static void FetchConfigContent(const TArray<FString> ContentIDs);
 	static void FetchCatalogContent();
 	static void SetRuntimeEnvironmentAPIKey(FString apiKey);
+	static void OnHttpRequestComplete(bool Succeed, FString ResponseJsonData);
 };

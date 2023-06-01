@@ -5,6 +5,7 @@
 #include "GetJoystickUnrealSettings.h"
 #include "Misc/SecureHash.h"
 
+GetJoystickUnrealServices::FHttpRequestCompleteDelegate GetJoystickUnrealServices::HttpRequestCompleteDelegate;
 
 GetJoystickUnrealServices::GetJoystickUnrealServices()
 {
@@ -39,11 +40,17 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
         if (bWasSuccessful && Response.IsValid())
         {
             // Request succeeded, handle the response here
+
             FString ResponseContent = Response->GetContentAsString();
+
+            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(true, ResponseContent);
+
             UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP POST response: %s"), *ResponseContent);
         }
         else
         {
+            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(false, "Request Failed");
+
             // Request failed
             UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP POST request failed!"));
         }
@@ -65,31 +72,30 @@ void GetJoystickUnrealServices::PerformHttpGetCatalog()
     HttpRequest->SetHeader("Content-Type", "application/json");
     HttpRequest->AppendToHeader("x-api-key", currentAPIKey);
 
-    HttpRequest->OnProcessRequestComplete().BindStatic(&OnHttpGetResponseReceived);
+    HttpRequest->OnProcessRequestComplete().BindStatic([](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+        if (bWasSuccessful && Response.IsValid())
+        {
+            int32 ResponseCode = Response->GetResponseCode();
+            FString ResponseContent = Response->GetContentAsString();
+
+            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(true, ResponseContent);
+            // Process the response content
+            // ...
+            UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP GET response: %s"), *ResponseContent);
+        }
+        else
+        {
+            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(false, "Request Failed");
+            // Handle request failure
+            UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
+        }
+        });
 
     if (!HttpRequest->ProcessRequest())
     {
         UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
     }
 }
-
-void GetJoystickUnrealServices::OnHttpGetResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
-{
-    if (bWasSuccessful && Response.IsValid())
-    {
-        int32 ResponseCode = Response->GetResponseCode();
-        FString ResponseContent = Response->GetContentAsString();
-
-        // Process the response content
-        // ...
-        UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP GET response: %s"), *ResponseContent);
-    }
-    else
-    {
-        // Handle request failure
-        UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
-    }
-} 
 
 FString GetJoystickUnrealServices::GetConfigContentAPIUrl(const TArray<FString>& ContentIds)
 {
