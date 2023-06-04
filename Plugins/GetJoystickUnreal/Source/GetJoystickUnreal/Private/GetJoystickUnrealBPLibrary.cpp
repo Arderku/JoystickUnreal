@@ -3,10 +3,32 @@
 #include "GetJoystickUnrealBPLibrary.h"
 #include "GetJoystickUnreal.h"
 
+UGetJoystickUnrealBPLibrary* UGetJoystickUnrealBPLibrary::Instance = nullptr;
+
 UGetJoystickUnrealBPLibrary::UGetJoystickUnrealBPLibrary(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UGetJoystickUnrealBPLibrary: Initialize"));
+}
+
+UGetJoystickUnrealBPLibrary* UGetJoystickUnrealBPLibrary::GetInstance()
+{
+	if (!Instance)
+	{
+		Instance = NewObject<UGetJoystickUnrealBPLibrary>(GetTransientPackage(), FName(TEXT("UGetJoystickUnrealBPLibrary")));
+		check(Instance);
+	}
+
+	return Instance;
+}
+
+void UGetJoystickUnrealBPLibrary::BindFetchConfigContentComplete(FFetchConfigContentComplete FetchConfigContentCompleteDelegateParameter)
+{
+	FetchConfigContentCompleteDelegate = FetchConfigContentCompleteDelegateParameter;
+}
+
+void UGetJoystickUnrealBPLibrary::BindFetchCatalogContentComplete(FFetchCatalogContentComplete FetchCatalogContentCompleteDelegateParameter)
+{
+	FetchCatalogContentCompleteDelegate = FetchCatalogContentCompleteDelegateParameter;
 }
 
 void UGetJoystickUnrealBPLibrary::GetJoystickUnrealRequestContent(TArray<FString> ContentIDs)
@@ -28,14 +50,26 @@ void UGetJoystickUnrealBPLibrary::GetJoystickUnrealSetRuntimeEnvironmentAPIKey(F
 
 void UGetJoystickUnrealBPLibrary::FetchConfigContentComplete(bool Succeed, FString ResponseJsonData)
 {
-	FGetJoystickUnrealModule::GetConfigContentCompleteDelegate.Unbind();
-	UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchConfigContentCallback(Succeed, ResponseJsonData);
 	UE_LOG(LogTemp, Warning, TEXT("UGetJoystickUnrealBPLibrary: GetJoystickUnrealFetchConfigContentCallback: %s"), *ResponseJsonData);
+
+	FGetJoystickUnrealModule::GetConfigContentCompleteDelegate.Unbind();
+
+	UGetJoystickUnrealBPLibrary* SingletonInstance = UGetJoystickUnrealBPLibrary::GetInstance();
+	if (SingletonInstance)
+	{
+		SingletonInstance->FetchConfigContentCompleteDelegate.ExecuteIfBound(Succeed, ResponseJsonData);
+	}
 }
 
 void UGetJoystickUnrealBPLibrary::FetchCatalogContentComplete(bool Succeed, FString ResponseJsonData)
 {
-	FGetJoystickUnrealModule::GetCatalogCompleteDelegate.Unbind();
-	UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchCatalogContentCallback(Succeed, ResponseJsonData);
 	UE_LOG(LogTemp, Warning, TEXT("UGetJoystickUnrealBPLibrary: GetJoystickUnrealFetchCatalogContentCallback: %s"), *ResponseJsonData);
+
+	FGetJoystickUnrealModule::GetCatalogCompleteDelegate.Unbind();
+
+	UGetJoystickUnrealBPLibrary* SingletonInstance = UGetJoystickUnrealBPLibrary::GetInstance();
+	if (SingletonInstance)
+	{
+		SingletonInstance->FetchCatalogContentCompleteDelegate.ExecuteIfBound(Succeed, ResponseJsonData);
+	}
 }

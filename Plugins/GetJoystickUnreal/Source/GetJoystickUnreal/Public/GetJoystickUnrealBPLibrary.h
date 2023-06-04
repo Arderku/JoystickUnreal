@@ -22,10 +22,31 @@
 *	For more info on custom blueprint nodes visit documentation:
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
+
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FFetchConfigContentComplete, bool, Succeed, FString, ResponseJsonData);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FFetchCatalogContentComplete, bool, Succeed, FString, ResponseJsonData);
+
 UCLASS()
 class UGetJoystickUnrealBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
+
+private:
+	static UGetJoystickUnrealBPLibrary* Instance;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "GetJoystickUnreal")
+		static UGetJoystickUnrealBPLibrary* GetInstance();
+
+	UPROPERTY()
+		FFetchConfigContentComplete FetchConfigContentCompleteDelegate;
+	UFUNCTION(BlueprintCallable, Category = "GetJoystickUnreal")
+		void BindFetchConfigContentComplete(FFetchConfigContentComplete FetchConfigContentCompleteDelegateParameter);
+
+	UPROPERTY()
+		FFetchCatalogContentComplete FetchCatalogContentCompleteDelegate;
+	UFUNCTION(BlueprintCallable, Category = "GetJoystickUnreal")
+		void BindFetchCatalogContentComplete(FFetchCatalogContentComplete FetchCatalogContentCompleteDelegateParameter);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Config Content", Keywords = "GetJoystickUnreal Fetch Config Content"), Category = "GetJoystickUnreal")
 	static void GetJoystickUnrealRequestContent(TArray<FString> ContentIDs);
@@ -35,12 +56,6 @@ class UGetJoystickUnrealBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Runtime Environment API Key", Keywords = "GetJoystickUnreal Set Runtime Environment API Key"), Category = "GetJoystickUnreal")
 		static void GetJoystickUnrealSetRuntimeEnvironmentAPIKey(FString apiKey);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Config Content Callback", Keywords = "GetJoystickUnreal Fetch Config Content Callback"), Category = "GetJoystickUnreal")
-		static void GetJoystickUnrealFetchConfigContentCallback(bool& Succeed, FString& ResponseJsonData);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Catalog Content Callback", Keywords = "GetJoystickUnreal Fetch Catalog Content Callback"), Category = "GetJoystickUnreal")
-		static void GetJoystickUnrealFetchCatalogContentCallback(bool& Succeed, FString& ResponseJsonData);
 
 		static void FetchConfigContentComplete(bool Succeed, FString ResponseJsonData);
 		static void FetchCatalogContentComplete(bool Succeed, FString ResponseJsonData);
