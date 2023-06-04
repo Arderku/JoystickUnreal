@@ -11,13 +11,13 @@ UGetJoystickUnrealBPLibrary::UGetJoystickUnrealBPLibrary(const FObjectInitialize
 
 void UGetJoystickUnrealBPLibrary::GetJoystickUnrealRequestContent(TArray<FString> ContentIDs)
 {
-	FGetJoystickUnrealModule::GetConfigContentCompleteDelegate.BindStatic(&GetJoystickUnrealFetchConfigContentCallback);
+	FGetJoystickUnrealModule::GetConfigContentCompleteDelegate.BindStatic(&FetchConfigContentComplete);
 	FGetJoystickUnrealModule::FetchConfigContent(ContentIDs);
 }
 
 void UGetJoystickUnrealBPLibrary::GetJoystickUnrealRequestCatalogContent()
 {
-	FGetJoystickUnrealModule::GetCatalogCompleteDelegate.BindStatic(&GetJoystickUnrealFetchCatalogContentCallback);
+	FGetJoystickUnrealModule::GetCatalogCompleteDelegate.BindStatic(&FetchCatalogContentComplete);
 	FGetJoystickUnrealModule::FetchCatalogContent();
 }
 
@@ -26,14 +26,16 @@ void UGetJoystickUnrealBPLibrary::GetJoystickUnrealSetRuntimeEnvironmentAPIKey(F
 	FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(apiKey);
 }
 
-void UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchConfigContentCallback(bool Succeed, FString ResponseJsonData)
+void UGetJoystickUnrealBPLibrary::FetchConfigContentComplete(bool Succeed, FString ResponseJsonData)
 {
 	FGetJoystickUnrealModule::GetConfigContentCompleteDelegate.Unbind();
+	UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchConfigContentCallback(Succeed, ResponseJsonData);
 	UE_LOG(LogTemp, Warning, TEXT("UGetJoystickUnrealBPLibrary: GetJoystickUnrealFetchConfigContentCallback: %s"), *ResponseJsonData);
 }
 
-void UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchCatalogContentCallback(bool Succeed, FString ResponseJsonData)
+void UGetJoystickUnrealBPLibrary::FetchCatalogContentComplete(bool Succeed, FString ResponseJsonData)
 {
 	FGetJoystickUnrealModule::GetCatalogCompleteDelegate.Unbind();
+	UGetJoystickUnrealBPLibrary::GetJoystickUnrealFetchCatalogContentCallback(Succeed, ResponseJsonData);
 	UE_LOG(LogTemp, Warning, TEXT("UGetJoystickUnrealBPLibrary: GetJoystickUnrealFetchCatalogContentCallback: %s"), *ResponseJsonData);
 }

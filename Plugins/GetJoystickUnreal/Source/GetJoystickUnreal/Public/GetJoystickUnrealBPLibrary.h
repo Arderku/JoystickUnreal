@@ -36,9 +36,12 @@ class UGetJoystickUnrealBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Runtime Environment API Key", Keywords = "GetJoystickUnreal Set Runtime Environment API Key"), Category = "GetJoystickUnreal")
 		static void GetJoystickUnrealSetRuntimeEnvironmentAPIKey(FString apiKey);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Conifg Content Callback", Keywords = "GetJoystickUnreal Fetch Config Content Callback"), Category = "GetJoystickUnreal")
-		static void GetJoystickUnrealFetchConfigContentCallback(bool Succeed, FString ResponseJsonData);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Config Content Callback", Keywords = "GetJoystickUnreal Fetch Config Content Callback"), Category = "GetJoystickUnreal")
+		static void GetJoystickUnrealFetchConfigContentCallback(bool& Succeed, FString& ResponseJsonData);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fetch Catalog Content Callback", Keywords = "GetJoystickUnreal Fetch Catalog Content Callback"), Category = "GetJoystickUnreal")
-		static void GetJoystickUnrealFetchCatalogContentCallback(bool Succeed, FString ResponseJsonData);
+		static void GetJoystickUnrealFetchCatalogContentCallback(bool& Succeed, FString& ResponseJsonData);
+
+		static void FetchConfigContentComplete(bool Succeed, FString ResponseJsonData);
+		static void FetchCatalogContentComplete(bool Succeed, FString ResponseJsonData);
 };
