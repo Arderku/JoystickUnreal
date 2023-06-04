@@ -12,6 +12,12 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	DECLARE_DELEGATE_TwoParams(FGetCatalogCompleteDelegate, bool, FString);
+	static FGetCatalogCompleteDelegate GetCatalogCompleteDelegate;
+
+	DECLARE_DELEGATE_TwoParams(FGetConfigContentCompleteDelegate, bool, FString);
+	static FGetConfigContentCompleteDelegate GetConfigContentCompleteDelegate;
+
 	static void FetchConfigContent(const TArray<FString> ContentIDs);
 	static void FetchCatalogContent();
 	static void SetRuntimeEnvironmentAPIKey(FString apiKey);
