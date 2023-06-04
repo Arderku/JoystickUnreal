@@ -16,8 +16,11 @@ public:
 	GetJoystickUnrealServices();
 	~GetJoystickUnrealServices();
 
-	DECLARE_DELEGATE_TwoParams(FHttpRequestCompleteDelegate, bool, FString);
-	static FHttpRequestCompleteDelegate HttpRequestCompleteDelegate;
+	DECLARE_DELEGATE_TwoParams(FGetCatalogCompleteDelegate, bool, FString);
+	static FGetCatalogCompleteDelegate GetCatalogCompleteDelegate;
+
+	DECLARE_DELEGATE_TwoParams(FGetConfigContentCompleteDelegate, bool, FString);
+	static FGetConfigContentCompleteDelegate GetConfigContentCompleteDelegate;
 
 	static void PerformHttpPost(const TArray<FString>& ContentIds);
 	static void PerformHttpGetCatalog();

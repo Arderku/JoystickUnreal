@@ -10,6 +10,9 @@ void FGetJoystickUnrealModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: GetJoystickUnreal Startup Module!"));
+
+	GetJoystickUnrealServices::GetConfigContentCompleteDelegate.BindStatic(&OnFetchConfigContentComplete);
+	GetJoystickUnrealServices::GetCatalogCompleteDelegate.BindStatic(&OnFetchCatalogContentComplete);
 }
 
 void FGetJoystickUnrealModule::ShutdownModule()
@@ -27,7 +30,6 @@ void FGetJoystickUnrealModule::FetchConfigContent(const TArray<FString> ContentI
 void FGetJoystickUnrealModule::FetchCatalogContent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: FetchCatalogContent"));
-	GetJoystickUnrealServices::HttpRequestCompleteDelegate.BindStatic(&OnHttpRequestComplete);
 	GetJoystickUnrealServices::PerformHttpGetCatalog();
 }
 
@@ -38,11 +40,15 @@ void FGetJoystickUnrealModule::SetRuntimeEnvironmentAPIKey(FString apiKey)
 	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: SetRuntimeEnvironmentAPIKey: %s"), *apiKey);
 }
 
-void FGetJoystickUnrealModule::OnHttpRequestComplete(bool Succeed, FString ResponseJsonData)
+void FGetJoystickUnrealModule::OnFetchConfigContentComplete(bool Succeed, FString ResponseJsonData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: OnHttpRequestComplete: %s"), *ResponseJsonData);
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: OnFetchConfigContentComplete: %s"), *ResponseJsonData);
 }
 
+void FGetJoystickUnrealModule::OnFetchCatalogContentComplete(bool Succeed, FString ResponseJsonData)
+{
+	UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: OnFetchCatalogContentComplete: %s"), *ResponseJsonData);
+}
 
 #undef LOCTEXT_NAMESPACE
 	

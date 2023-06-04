@@ -5,7 +5,8 @@
 #include "GetJoystickUnrealSettings.h"
 #include "Misc/SecureHash.h"
 
-GetJoystickUnrealServices::FHttpRequestCompleteDelegate GetJoystickUnrealServices::HttpRequestCompleteDelegate;
+GetJoystickUnrealServices::FGetCatalogCompleteDelegate GetJoystickUnrealServices::GetCatalogCompleteDelegate;
+GetJoystickUnrealServices::FGetConfigContentCompleteDelegate GetJoystickUnrealServices::GetConfigContentCompleteDelegate;
 
 GetJoystickUnrealServices::GetJoystickUnrealServices()
 {
@@ -42,17 +43,16 @@ void GetJoystickUnrealServices::PerformHttpPost(const TArray<FString>& ContentId
             // Request succeeded, handle the response here
 
             FString ResponseContent = Response->GetContentAsString();
-
-            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(true, ResponseContent);
-
             UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP POST response: %s"), *ResponseContent);
+
+            GetJoystickUnrealServices::GetConfigContentCompleteDelegate.ExecuteIfBound(true, ResponseContent);
         }
         else
         {
-            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(false, "Request Failed");
-
             // Request failed
             UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP POST request failed!"));
+
+            GetJoystickUnrealServices::GetConfigContentCompleteDelegate.ExecuteIfBound(false, "Get Content Config Request Failed");
         }
         });
 
@@ -78,16 +78,18 @@ void GetJoystickUnrealServices::PerformHttpGetCatalog()
             int32 ResponseCode = Response->GetResponseCode();
             FString ResponseContent = Response->GetContentAsString();
 
-            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(true, ResponseContent);
             // Process the response content
             // ...
             UE_LOG(LogTemp, Warning, TEXT("JoystickUnreal: HTTP GET response: %s"), *ResponseContent);
+
+            GetJoystickUnrealServices::GetCatalogCompleteDelegate.ExecuteIfBound(true, ResponseContent);
         }
         else
         {
-            GetJoystickUnrealServices::HttpRequestCompleteDelegate.ExecuteIfBound(false, "Request Failed");
             // Handle request failure
             UE_LOG(LogTemp, Error, TEXT("JoystickUnreal: HTTP GET request failed!"));
+
+            GetJoystickUnrealServices::GetCatalogCompleteDelegate.ExecuteIfBound(false, "Get Catalog Request Failed");
         }
         });
 
